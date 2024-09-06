@@ -1,0 +1,4 @@
+# Fill values in here and rename to .env 
+GOOGLE_APPLICATION_CREDENTIALS=''
+NEXT_PUBLIC_PROD_URL='https://interviewai-pro-backend-sekyu5peqq-uc.a.run.app'
+DEEPGRAM_API_KEY=''

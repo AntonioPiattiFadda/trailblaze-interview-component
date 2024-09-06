@@ -1,0 +1,22 @@
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json (or yarn.lock) files
+COPY package*.json ./
+
+# Install the project dependencies (including devDependencies for building)
+RUN npm install
+
+# Copy the rest of your app's source code from your host to your image filesystem.
+COPY . .
+
+# Build the Next.js app
+RUN npm run build
+
+# Next.js listens on port 3000 by default, but Cloud Run and many other
+# platforms expect your application to listen on port 8080 or to respect the PORT environment variable.
+# You can set the default port as 8080, but ensure your application listens on process.env.PORT.
+ENV PORT 3000
+
+# Start the Next.js app in production mode
+CMD exec npm start

@@ -1,0 +1,29 @@
+steps:
+  # Step 1: Build the Docker image with a build argument
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '--build-arg', 'NEXT_PUBLIC_PROD_URL=https://interviewai-pro-backend-sekyu5peqq-uc.a.run.app', '-t', 'gcr.io/$PROJECT_ID/github.com/hellointerviewai/interviewai-main/interviewai-frontend:$COMMIT_SHA', '.']
+    dir: 'interviewai-frontend/'
+
+  # Step 2: Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/github.com/hellointerviewai/interviewai-main/interviewai-frontend:$COMMIT_SHA']
+    dir: 'interviewai-frontend/'
+
+  # Step 3: Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: ['gcloud', 'run', 'deploy', 'interviewai-pro-frontend',
+           '--image', 'gcr.io/$PROJECT_ID/github.com/hellointerviewai/interviewai-main/interviewai-frontend:$COMMIT_SHA',
+           '--region', 'us-central1',
+           '--port', '3000',
+           '--service-account', 'cloud-run-service-account@interviewai-pro.iam.gserviceaccount.com',
+           '--platform', 'managed',
+           '--verbosity', 'debug',
+           '--allow-unauthenticated']
+    id: Deploy to Cloud Run
+
+# Specify images to be stored in the build's output resources (this makes the image available in GCR)
+images:
+  - 'gcr.io/$PROJECT_ID/github.com/hellointerviewai/interviewai-main/interviewai-frontend:$COMMIT_SHA'
+
+# Set timeout to 20 minutes (default is 10 minutes, adjust as needed)
+timeout: 1200s
