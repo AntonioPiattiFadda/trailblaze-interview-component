@@ -1,5 +1,6 @@
+'use client';
 // chrome://flags/#unsafely-treat-insecure-origin-as-secure
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { CircularProgress, useMediaQuery } from '@mui/material';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import { useRouter } from 'next/router';
@@ -22,6 +23,12 @@ export default function Starter() {
   const [resumeDescription, setResumeDescription] = useState('');
   const { questions, setQuestions } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (Object.keys(router.query).length > 0) {
+      sessionStorage.setItem('routerQuery', JSON.stringify(router.query));
+    }
+  }, [router.query]);
 
   const submitResumeJob = async () => {
     if (jobDescription.trim().length < 50) {
@@ -55,9 +62,9 @@ export default function Starter() {
         .map((data) => data.trim());
 
       setQuestions(questionsArray);
+      router.push('/interview');
       setIsLoading(false);
     }
-    router.push('/interview');
   };
 
   const uploadFile = async (file) => {
@@ -95,7 +102,7 @@ export default function Starter() {
   };
 
   return (
-    <div className="w-[100vw] flex items-center justify-center">
+    <div className="w-[100vw] h-[100vh] flex items-center justify-center">
       <div
         style={{
           width: '100%',

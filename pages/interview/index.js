@@ -34,7 +34,7 @@ export default function Question() {
   const [interviewOver, setInterviewOver] = useState(false);
   const [downloadLink, setDownloadLink] = useState('');
   const [recordStarted, setRecordStarted] = useState(false);
-  const { questions, setQuestions } = useContext(AppContext);
+  let { questions, setQuestions } = useContext(AppContext);
   const [answers, setAnswers] = useState(
     questions.map((item) => {
       return '';
@@ -395,6 +395,8 @@ export default function Question() {
       console.error(errorData);
     } else {
       let res = await response.json();
+      console.log(res.analysis, 'api res');
+
       setAnalysis(res.analysis);
       setIsLoading(false);
     }
@@ -454,12 +456,14 @@ export default function Question() {
   }, [indexNum]);
 
   useEffect(() => {
+    console.log(questions);
+
     if (!questions || questions.length === 0) router.push('/');
   }, [questions]);
 
-  useEffect(() => {
-    console.log(answers);
-  }, [answers]);
+  // useEffect(() => {
+  //   console.log(answers);
+  // }, [answers]);
 
   useEffect(() => {
     if (analysis != '') {

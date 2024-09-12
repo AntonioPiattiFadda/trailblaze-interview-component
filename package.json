@@ -24,7 +24,7 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "file-saver": "^2.0.5",
-    "firebase": "^10.8.0",
+    "firebase": "^10.13.1",
     "framer-motion": "^11.0.3",
     "lucide-react": "^0.438.0",
     "mammoth": "^1.6.0",
