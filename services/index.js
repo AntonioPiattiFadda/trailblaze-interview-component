@@ -1,14 +1,12 @@
 import { db } from '@/firebaseConfig';
-import { collection, getDoc, doc, updateDoc } from 'firebase/firestore';
+import { getDoc, doc, updateDoc } from 'firebase/firestore';
 
 export const saveInterviewAnswers = async (data, jobId, userId) => {
   try {
     // Referencia al documento del usuario en la colección 'students'
-    const userCollection = collection(db, 'students');
-    console.log(userId, JobId);
+    const userCollection = doc(db, 'students', userId);
 
-    const userRef = doc(userCollection, userId);
-    const userDoc = await getDoc(userRef);
+    const userDoc = await getDoc(userCollection);
 
     if (!userDoc.exists()) {
       throw new Error(`User with ID ${userId} not found`);
@@ -18,7 +16,8 @@ export const saveInterviewAnswers = async (data, jobId, userId) => {
     const userJobs = userDoc.data().jobs || [];
 
     // Busca el índice del trabajo que coincide con jobId
-    const jobIndex = userJobs.findIndex((job) => job.id === jobId);
+    const jobIndex = userJobs.findIndex((job) => job.id === Number(jobId));
+    console.log(jobIndex);
 
     if (jobIndex === -1) {
       throw new Error(`Job with ID ${jobId} not found`);
@@ -26,16 +25,16 @@ export const saveInterviewAnswers = async (data, jobId, userId) => {
 
     // Agrega la información de 'data' al campo 'interview' del trabajo correspondiente
     userJobs[jobIndex].interview = data;
+    userJobs[jobIndex].statusStepFive = 'success';
 
     // Actualiza el documento del usuario con los trabajos modificados
-    await updateDoc(userDocRef, {
+    await updateDoc(userCollection, {
       jobs: userJobs,
     });
 
-    console.log('Interview data saved successfully!');
+    return true;
   } catch (error) {
     console.error('Error saving interview answers:', error);
-    // Corrige la manera de lanzar el error
     throw new Error(`Error saving interview answers: ${error.message}`);
   }
 };

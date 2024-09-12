@@ -295,7 +295,7 @@ export default function Interview({
               </div>
             </CardHeader>
             <CardContent
-              className="flex items-center justify-center h-[700px]"
+              className="flex items-center justify-center h-[500px]"
               style={{
                 position: 'relative',
                 width: '100%',
@@ -307,50 +307,57 @@ export default function Interview({
                 ref={videoRef}
                 autoPlay
                 style={{
-                  width: '100%',
-                  transform: 'scaleX(-1)',
+                  width: '100%', // Mantiene el ancho al 100%
+                  height: '500px', // Fija la altura en 450px
+                  transform: 'scaleX(-1)', // Espejo horizontal del video
                   borderRadius: '20px',
                   marginTop: '40px',
+                  objectFit: 'cover', // Ajusta el video para cubrir el contenedor sin distorsionar
                 }}
               ></video>
-              <CardMedia
-                component="video"
-                src="https://storage.googleapis.com/interviewai-app-public/woman-interview.mp4"
-                title="Interviewer Video"
-                autoPlay
-                loop
-                muted
-                playsInline
-                sx={{
+              <div
+                style={{
                   width: '300px', // Doubled the size
-                  height: '200px', // Doubled the size
+                  height: '170px', // Doubled the size
                   margin: '0px 0px 0px 20px',
                   borderRadius: '20px',
                   position: 'absolute',
-                  top: '30px',
+                  top: '40px',
                   left: '30px',
-                  display: videoGender ? '' : 'none',
+                  overflow: 'hidden',
+                  // border: '1px solid white',
                 }}
-              />
-              <CardMedia
-                component="video"
-                src="https://storage.googleapis.com/interviewai-app-public/man-interview.mp4"
-                title="Interviewer Video"
-                autoPlay
-                loop
-                muted
-                playsInline
-                sx={{
-                  width: '300px', // Doubled the size
-                  height: '200px', // Doubled the size
-                  margin: '0px 0px 0px 20px',
-                  borderRadius: '20px',
-                  position: 'absolute',
-                  top: '30px',
-                  left: '30px',
-                  display: !videoGender ? '' : 'none',
-                }}
-              />
+              >
+                <CardMedia
+                  component="video"
+                  src="https://storage.googleapis.com/interviewai-app-public/woman-interview.mp4"
+                  title="Interviewer Video"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  sx={{
+                    width: '100%', // Doubled the size
+                    height: '100%', // Doubled the size
+
+                    display: videoGender ? '' : 'none',
+                  }}
+                />
+                <CardMedia
+                  component="video"
+                  src="https://storage.googleapis.com/interviewai-app-public/man-interview.mp4"
+                  title="Interviewer Video"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  sx={{
+                    width: '100%', // Doubled the size
+                    height: '100%', // Doubled the size
+                    display: !videoGender ? '' : 'none',
+                  }}
+                />
+              </div>
             </CardContent>
             <CardContent className="border m-6 rounded-[8px]">
               <div className="flex pt-8">

@@ -3,10 +3,9 @@ import { Button } from '../ui/button';
 import { Card, CardDescription, CardTitle, CardContent } from '../ui/card';
 import { saveInterviewAnswers } from '@/services';
 
-const AnalysisModal = ({ open, onClose, analysis, isLoading }) => {
+const AnalysisModal = ({ open, onClose, analysis }) => {
   const user = sessionStorage.getItem('routerQuery');
   const parsedUser = JSON.parse(user);
-  console.log(analysis);
 
   useEffect(() => {
     if (!analysis) {
@@ -19,11 +18,10 @@ const AnalysisModal = ({ open, onClose, analysis, isLoading }) => {
       })
       .catch((error) => {
         alert('Error saving interview answers:', error);
-        console.log(error);
 
         console.error('Error saving interview answers:', error);
       });
-  }, [analysis]);
+  }, []);
 
   const analysisLines = analysis.split('\n');
 
