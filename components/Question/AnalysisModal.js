@@ -3,13 +3,17 @@ import { Button } from '../ui/button';
 import { Card, CardDescription, CardTitle, CardContent } from '../ui/card';
 import { saveInterviewAnswers } from '@/services';
 
-const AnalysisModal = ({ open, onClose, analysis }) => {
+const AnalysisModal = ({ open, onClose, analysis, saveInfo }) => {
   const user = sessionStorage.getItem('routerQuery');
   const parsedUser = JSON.parse(user);
 
   console.log('analysis', analysis, parsedUser);
   useEffect(() => {
+    console.log('analysis', saveInfo);
     if (!analysis) {
+      return;
+    }
+    if (saveInfo === false) {
       return;
     }
     const analysisToSave = analysis.split('\n').join('</br>');
@@ -18,7 +22,7 @@ const AnalysisModal = ({ open, onClose, analysis }) => {
       .catch((error) => {
         console.error('Error saving interview answers:', error);
       });
-  }, []);
+  }, [analysis]);
 
   const analysisLines = analysis.split('\n');
 
