@@ -39,6 +39,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const TRAILBLAZE_DASHBOARD_URL = 'localhost:100/student/dashboard';
 
@@ -262,19 +263,25 @@ export default function Interview({
     }
   }, []);
 
-  console.log(TRAILBLAZE_DASHBOARD_URL);
+  const redirectToDashboard = () => {
+    window.parent.postMessage(
+      { type: 'REDIRECT', url: TRAILBLAZE_DASHBOARD_URL },
+      '*'
+    );
+  };
 
+  // TRAILBLAZE_DASHBOARD_URL
   return (
     <div className="flex flex-col">
       <div className="p-[32px] flex flex-col gap-[20px] col-span-2">
-        <Link href={TRAILBLAZE_DASHBOARD_URL}>
+        <button onClick={redirectToDashboard}>
           <Card className="flex flex-col h-[100%] w-[290px] justify-between px-6 py-2 border cursor-pointer">
             <CardTitle className="text-[14px]  font-semibold text-[#171717] flex gap-2 ">
               <Image src={ArrowLeft} alt="Arrow left" />
               Cancel and return to dashboard{' '}
             </CardTitle>
           </Card>
-        </Link>
+        </button>
         <div className="grid grid-cols-[2fr_1fr] gap-8">
           <Card className="flex flex-col">
             <CardHeader className="flex flex-row justify-between border-b-[1px] py-3 h-[85px]">

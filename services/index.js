@@ -17,7 +17,6 @@ export const saveInterviewAnswers = async (data, jobId, userId) => {
 
     // Busca el índice del trabajo que coincide con jobId
     const jobIndex = userJobs.findIndex((job) => job.id === Number(jobId));
-    console.log(jobIndex);
 
     if (jobIndex === -1) {
       throw new Error(`Job with ID ${jobId} not found`);

@@ -7,18 +7,15 @@ const AnalysisModal = ({ open, onClose, analysis }) => {
   const user = sessionStorage.getItem('routerQuery');
   const parsedUser = JSON.parse(user);
 
+  console.log('analysis', analysis, parsedUser);
   useEffect(() => {
     if (!analysis) {
       return;
     }
     const analysisToSave = analysis.split('\n').join('</br>');
     saveInterviewAnswers(analysisToSave, parsedUser.jobId, parsedUser.studentId)
-      .then(() => {
-        alert('Interview data saved successfully!');
-      })
+      .then(() => {})
       .catch((error) => {
-        alert('Error saving interview answers:', error);
-
         console.error('Error saving interview answers:', error);
       });
   }, []);
