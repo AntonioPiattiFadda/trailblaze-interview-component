@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef } from "react";
 import {
   Button,
   DialogActions,
@@ -7,50 +7,50 @@ import {
   Container,
   CircularProgress,
   DialogContent,
-} from '@mui/material';
-import Interview from '@/components/Question/Interview';
-import { motion } from 'framer-motion';
-import AppContext from '@/contexts/AppContext';
-import { useRouter } from 'next/router';
-import Dialog from '@mui/material/Dialog';
-import { questionList } from '@/constants/questionList';
-import { SignalWifiStatusbarNullTwoTone } from '@mui/icons-material';
-import { Ready } from '@/components/Question/Ready';
-import AnalysisModal from '@/components/Question/AnalysisModal';
+} from "@mui/material";
+import Interview from "@/components/Question/Interview";
+import { motion } from "framer-motion";
+import AppContext from "@/contexts/AppContext";
+import { useRouter } from "next/router";
+import Dialog from "@mui/material/Dialog";
+import { questionList } from "@/constants/questionList";
+import { SignalWifiStatusbarNullTwoTone } from "@mui/icons-material";
+import { Ready } from "@/components/Question/Ready";
+import AnalysisModal from "@/components/Question/AnalysisModal";
 
 export default function Question() {
   const recognitionRef = useRef(null);
   const router = useRouter();
-  const [recordButtonLabel, setRecordButtonLabel] = useState('Record');
-  const [recordButtonColor, setRecordButtonColor] = useState('primary');
+  const [recordButtonLabel, setRecordButtonLabel] = useState("Record");
+  const [recordButtonColor, setRecordButtonColor] = useState("primary");
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isStarted, setIsStarted] = useState(false);
   const [indexNum, setIndexNum] = useState(1);
   const [open, setOpen] = useState(false);
   const [conversationHistory, setConversationHistory] = useState([]);
   const [isListening, setIsListening] = useState(false);
-  const [recognizedSpeech, setRecognizedSpeech] = useState('');
+  const [recognizedSpeech, setRecognizedSpeech] = useState("");
   const [isAiTalking, setIsAiTalking] = useState(false);
   const [interviewOver, setInterviewOver] = useState(false);
-  const [downloadLink, setDownloadLink] = useState('');
+  const [downloadLink, setDownloadLink] = useState("");
   const [recordStarted, setRecordStarted] = useState(false);
   let { questions, setQuestions } = useContext(AppContext);
   const [answers, setAnswers] = useState(
     questions.map((item) => {
-      return '';
+      return "";
     })
   );
   const [isClicked, setIsClicked] = useState(false);
   const [tempAnswer, setTempAnswer] = useState(answers[indexNum - 1]);
   const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState('');
+  const [analysis, setAnalysis] = useState("");
   const [expanded, setExpanded] = useState(false);
   const currentlyPlayingAudioRef = useRef(null);
   const mediaRecorder = useRef(null);
   const [permission, setPermission] = useState(false);
   const [stream, setStream] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]); // Ensure this is defined
-  globalThis.tempAnswerBase = '';
+  globalThis.tempAnswerBase = "";
   globalThis.tempAnswerPlusFlag = false;
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function Question() {
 
   // Function to get microphone and camera permission
   const getMicrophonePermission = async () => {
-    if ('MediaRecorder' in window) {
+    if ("MediaRecorder" in window) {
       try {
         const streamData = await navigator.mediaDevices.getUserMedia({
           audio: true,
@@ -73,25 +73,25 @@ export default function Question() {
         alert(err.message);
       }
     } else {
-      alert('The MediaRecorder API is not supported in your browser.');
+      alert("The MediaRecorder API is not supported in your browser.");
     }
   };
 
   // Function to start recording
   const startRecording = async () => {
     setExpanded(true);
-    console.log('started...');
+    console.log("started...");
 
     let currentTime = Date.now();
     let lastMessageTime = currentTime;
 
-    let answer_temp = '';
+    let answer_temp = "";
 
-    console.log(localStorage.getItem('recordStarted'), 'recordStarted');
+    console.log(localStorage.getItem("recordStarted"), "recordStarted");
 
-    if (localStorage.getItem('recordStarted') === '1') {
-      console.log('lll222222lll');
-      console.log('llllll');
+    if (localStorage.getItem("recordStarted") === "1") {
+      console.log("lll222222lll");
+      console.log("llllll");
       try {
         const streamData = await navigator.mediaDevices.getUserMedia({
           audio: true,
@@ -100,7 +100,7 @@ export default function Question() {
         setPermission(true);
         setStream(streamData);
 
-        const media = new MediaRecorder(streamData, { type: 'video/mp4' });
+        const media = new MediaRecorder(streamData, { type: "video/mp4" });
         mediaRecorder.current = media;
         let localChunks = [];
 
@@ -111,7 +111,7 @@ export default function Question() {
         };
 
         mediaRecorder.current.onstop = () => {
-          const blob = new Blob(localChunks, { type: 'video/mp4' });
+          const blob = new Blob(localChunks, { type: "video/mp4" });
           setRecordedChunks([blob]);
           localStorage.setItem(
             `videoChunks_${indexNum}`,
@@ -119,21 +119,21 @@ export default function Question() {
           );
         };
 
-        const socket = new WebSocket('wss://api.deepgram.com/v1/listen', [
-          'token',
-          '017954fbe0412aa422dd5dca9e7874cc029649f4',
+        const socket = new WebSocket("wss://api.deepgram.com/v1/listen", [
+          "token",
+          "017954fbe0412aa422dd5dca9e7874cc029649f4",
         ]);
 
         socket.onopen = () => {
-          console.log({ event: 'onopen' });
+          console.log({ event: "onopen" });
 
           socket.send(
             JSON.stringify({
               config: {
-                language: 'en-US',
+                language: "en-US",
                 smart_format: false,
                 vad_events: true,
-                model: 'nova',
+                model: "nova",
                 interim_results: true,
                 profanity_filter: true,
                 endpointing: false,
@@ -143,11 +143,11 @@ export default function Question() {
             })
           );
 
-          mediaRecorder.current.addEventListener('dataavailable', (event) => {
+          mediaRecorder.current.addEventListener("dataavailable", (event) => {
             if (
               event.data.size > 0 &&
               socket.readyState == 1 &&
-              localStorage.getItem('recordStarted') === '1'
+              localStorage.getItem("recordStarted") === "1"
             ) {
               socket.send(event.data);
               setRecordedChunks((prev) => [...prev, event.data]); // Save the chunks for download
@@ -158,23 +158,23 @@ export default function Question() {
         };
 
         socket.onmessage = (message) => {
-          console.log({ event: 'onmessage', message });
+          console.log({ event: "onmessage", message });
 
           let received = JSON.parse(message.data);
-          console.log(received, '--received--');
+          console.log(received, "--received--");
 
           if (
             received.channel &&
-            localStorage.getItem('recordStarted') === '1'
+            localStorage.getItem("recordStarted") === "1"
           ) {
             console.log(
-              localStorage.getItem('recordStarted'),
-              'recordStarted1'
+              localStorage.getItem("recordStarted"),
+              "recordStarted1"
             );
 
             const transcript = received.channel.alternatives[0].transcript;
 
-            if (transcript === '') {
+            if (transcript === "") {
               currentTime = Date.now();
               const timeIntervalSeconds =
                 (currentTime - lastMessageTime) / 1000;
@@ -183,31 +183,31 @@ export default function Question() {
                   `Time interval since last message: ${timeIntervalSeconds} seconds`
                 );
               } else {
-                console.log('---below---');
+                console.log("---below---");
               }
             } else {
               lastMessageTime = currentTime;
             }
 
             if (transcript) {
-              answer_temp = answer_temp + transcript + ' ';
+              answer_temp = answer_temp + transcript + " ";
               setTempAnswer(answer_temp);
             }
           }
         };
 
         socket.onclose = () => {
-          console.log({ event: 'onclose' });
+          console.log({ event: "onclose" });
         };
 
         socket.onerror = (error) => {
-          console.log({ event: 'onerror', error });
+          console.log({ event: "onerror", error });
         };
       } catch (err) {
         alert(err.message);
       }
     } else {
-      alert('The MediaRecorder API is not supported in your browser.');
+      alert("The MediaRecorder API is not supported in your browser.");
     }
   };
 
@@ -219,28 +219,28 @@ export default function Question() {
         mediaRecorder.current.stop();
       }
       setRecordStarted(false);
-      setRecordButtonLabel('Record');
-      setRecordButtonColor('primary');
+      setRecordButtonLabel("Record");
+      setRecordButtonColor("primary");
     } else {
       // Start recording
       setRecordedChunks([]);
-      localStorage.setItem('recordStarted', '1');
+      localStorage.setItem("recordStarted", "1");
       await getMicrophonePermission();
       startRecording();
       setRecordStarted(true);
-      setRecordButtonLabel('STOP');
-      setRecordButtonColor('secondary');
+      setRecordButtonLabel("STOP");
+      setRecordButtonColor("secondary");
     }
   };
 
   const handleDownloadRecording = () => {
     stopAIResponseAudio();
     if (recordedChunks.length) {
-      const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+      const blob = new Blob(recordedChunks, { type: "video/mp4" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       document.body.appendChild(a);
-      a.style = 'display: none';
+      a.style = "display: none";
       a.href = url;
       a.download = `InterviewAI_Recording_${indexNum}.mp4`;
       a.click();
@@ -251,22 +251,22 @@ export default function Question() {
 
   const handleDownloadAnalysis = async () => {
     try {
-      const response = await fetch('/api/generate_analysis');
+      const response = await fetch("/api/generate_analysis");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       setDownloadLink(url);
     } catch (error) {
-      console.error('Error fetching analysis file:', error);
+      console.error("Error fetching analysis file:", error);
     }
   };
 
   const playAIsResponse = async (responseText) => {
     try {
       console.log(responseText);
-      const response = await fetch('/api/synthesize_speech', {
-        method: 'POST',
+      const response = await fetch("/api/synthesize_speech", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           responseText: responseText,
@@ -283,36 +283,36 @@ export default function Question() {
         const audio = new Audio(audioUrl);
         currentlyPlayingAudioRef.current = audio;
 
-        audio.addEventListener('ended', () => {
+        audio.addEventListener("ended", () => {
           setIsListening(true);
           setIsAiTalking(false);
           currentlyPlayingAudioRef.current = SignalWifiStatusbarNullTwoTone;
         });
         audio.play().catch((error) => {
-          console.error('Error playing audio:', error);
+          console.error("Error playing audio:", error);
         });
       }
     } catch (error) {
-      console.error('Error synthesizing speech:', error);
+      console.error("Error synthesizing speech:", error);
     }
   };
 
   const getInitialAIQuestion = async () => {
     try {
-      const response = await fetch('/api/interview_start');
+      const response = await fetch("/api/interview_start");
       const initialQuestion = response.question;
-      setConversationHistory([{ user: '', ai: initialQuestion }]);
+      setConversationHistory([{ user: "", ai: initialQuestion }]);
     } catch (error) {
-      console.error('Error fetching initial AI question:', error);
+      console.error("Error fetching initial AI question:", error);
     }
   };
 
   const sendToChatGPT = async (speech) => {
     try {
-      const response = await fetch('/api/ es', {
-        method: 'POST',
+      const response = await fetch("/api/ es", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           speech: speech,
@@ -333,7 +333,7 @@ export default function Question() {
         // Continue interview as normal
       }
     } catch (error) {
-      console.error('Error fetching AI response:', error);
+      console.error("Error fetching AI response:", error);
     }
   };
 
@@ -348,7 +348,7 @@ export default function Question() {
   const stopAIResponseAudio = () => {
     if (
       currentlyPlayingAudioRef.current &&
-      typeof currentlyPlayingAudioRef.current.pause === 'function'
+      typeof currentlyPlayingAudioRef.current.pause === "function"
     ) {
       currentlyPlayingAudioRef.current.pause();
       currentlyPlayingAudioRef.current = null;
@@ -362,27 +362,27 @@ export default function Question() {
     if (indexNum == 10) {
       combinedQA = questions
         .map((question, index) => {
-          let qNumber = question.split('.')[0];
+          let qNumber = question.split(".")[0];
           return `question ${qNumber}: ${question.slice(
             qNumber.length + 2
           )}\nanswer ${qNumber}: ${updatedAnswers[index]}`;
         })
-        .join('\n\n');
+        .join("\n\n");
     } else {
       combinedQA =
-        'Question: ' +
-        questions[indexNum - 1].split('.').slice(1).join('.') +
-        '\n' +
-        'Answer: ' +
+        "Question: " +
+        questions[indexNum - 1].split(".").slice(1).join(".") +
+        "\n" +
+        "Answer: " +
         updatedAnswers[indexNum - 1];
     }
 
     console.log(combinedQA);
     setIsLoading(true);
-    const response = await fetch('/api/submit_answer', {
-      method: 'POST',
+    const response = await fetch("/api/submit_answer", {
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
       },
       body: JSON.stringify({
         combinedQA: combinedQA,
@@ -395,7 +395,7 @@ export default function Question() {
       console.error(errorData);
     } else {
       let res = await response.json();
-      console.log(res.analysis, 'api res');
+      console.log(res.analysis, "api res");
 
       setAnalysis(res.analysis);
       setIsLoading(false);
@@ -431,7 +431,7 @@ export default function Question() {
   useEffect(() => {
     setTempAnswer(answers[indexNum - 1]);
     if (questions.length > 0 && isFirstRender !== true) {
-      console.log(isAiTalking, 'playing audio....');
+      console.log(isAiTalking, "playing audio....");
       if (!isAiTalking && isStarted) {
         playAIsResponse(questions[indexNum - 1]);
       }
@@ -443,7 +443,7 @@ export default function Question() {
     const stopAudio = () => {
       if (
         currentlyPlayingAudioRef.current &&
-        typeof currentlyPlayingAudioRef.current.pause === 'function'
+        typeof currentlyPlayingAudioRef.current.pause === "function"
       ) {
         currentlyPlayingAudioRef.current.pause();
         currentlyPlayingAudioRef.current = null;
@@ -458,7 +458,7 @@ export default function Question() {
   useEffect(() => {
     console.log(questions);
 
-    if (!questions || questions.length === 0) router.push('/');
+    if (!questions || questions.length === 0) router.push("/");
   }, [questions]);
 
   // useEffect(() => {
@@ -466,7 +466,7 @@ export default function Question() {
   // }, [answers]);
 
   useEffect(() => {
-    if (analysis != '') {
+    if (analysis != "") {
       setOpen(true);
     }
   }, [analysis]);
@@ -525,19 +525,19 @@ export default function Question() {
       />
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          zIndex: '2',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          position: 'fixed',
-          display: isLoading ? 'flex' : 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
+          width: "100%",
+          height: "100%",
+          zIndex: "2",
+          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          position: "fixed",
+          display: isLoading ? "flex" : "none",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <CircularProgress />
       </div>
-      {componentList[indexNum - 1]}{' '}
+      {componentList[indexNum - 1]}{" "}
     </div>
   ) : (
     <Ready
