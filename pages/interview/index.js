@@ -521,6 +521,7 @@ export default function Question() {
         onClose={handleClose}
         analysis={analysis}
         isLoading={isLoading}
+        saveInfo={indexNum === 10}
       />
       <div
         style={{
