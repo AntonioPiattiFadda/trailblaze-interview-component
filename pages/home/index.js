@@ -1,79 +1,83 @@
-'use client';
+"use client";
 // chrome://flags/#unsafely-treat-insecure-origin-as-secure
-import React, { useState, useContext, useEffect } from 'react';
-import { CircularProgress, useMediaQuery } from '@mui/material';
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-import { useRouter } from 'next/router';
-import AppContext from '@/contexts/AppContext';
-import { Button } from '@/components/ui/button';
+import React, { useState, useContext, useEffect } from "react";
+import { CircularProgress, useMediaQuery } from "@mui/material";
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+import { useRouter } from "next/router";
+import AppContext from "@/contexts/AppContext";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 //API with Backend
 export default function Starter() {
   const router = useRouter();
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const [resumeFile, setResumeFile] = useState(null);
-  const [jobDescription, setJobDescription] = useState('');
-  const [resumeDescription, setResumeDescription] = useState('');
+  const [jobDescription, setJobDescription] = useState("");
+  const [resumeDescription, setResumeDescription] = useState("");
   const { questions, setQuestions } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (Object.keys(router.query).length > 0) {
-      sessionStorage.setItem('routerQuery', JSON.stringify(router.query));
+      sessionStorage.setItem("routerQuery", JSON.stringify(router.query));
     }
   }, [router.query]);
 
   const submitResumeJob = async () => {
-    if (jobDescription.trim().length < 50) {
-      alert('Job description must be at least 50 characters long.');
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    const response = await fetch('/api/submit_resume', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        resume: resumeDescription,
-        jobDescription: jobDescription,
-      }),
-    });
-    console.log('request received');
+    try {
+      if (jobDescription.trim().length < 50) {
+        alert("Job description must be at least 50 characters long.");
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      const response = await fetch("/api/submit_resume", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          resume: resumeDescription,
+          jobDescription: jobDescription,
+        }),
+      });
+      console.log("request received");
+      console.log(response);
+      if (!response.ok) {
+        // handle error case
+        const errorData = await response.json();
+        console.error(errorData);
+        setIsLoading(false);
+      } else {
+        let res = await response.json();
+        const questionsArray = res.question
+          .trim()
+          .split("\n")
+          .map((data) => data.trim());
 
-    if (!response.ok) {
-      // handle error case
-      const errorData = await response.json();
-      console.error(errorData);
-      setIsLoading(false);
-    } else {
-      let res = await response.json();
-      const questionsArray = res.question
-        .trim()
-        .split('\n')
-        .map((data) => data.trim());
-
-      setQuestions(questionsArray);
-      router.push('/interview');
-      setIsLoading(false);
+        setQuestions(questionsArray);
+        router.push("/interview");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const uploadFile = async (file) => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/resume_recognize', {
-        method: 'POST',
+      const response = await fetch("/api/resume_recognize", {
+        method: "POST",
         body: formData,
       });
 
@@ -83,7 +87,7 @@ export default function Starter() {
       const data = await response.json();
       setResumeDescription(data.data);
     } catch (error) {
-      console.error('Error:', error); // Log the error
+      console.error("Error:", error); // Log the error
     }
   };
 
@@ -105,18 +109,18 @@ export default function Starter() {
     <div className="w-[100vw] h-[100vh] flex items-center justify-center">
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          zIndex: '2',
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          position: 'fixed',
+          width: "100%",
+          height: "100%",
+          zIndex: "2",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+          position: "fixed",
           left: 0,
           right: 0,
           top: 0,
           bottom: 0,
-          display: isLoading ? 'flex' : 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: isLoading ? "flex" : "none",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <CircularProgress />
@@ -128,7 +132,7 @@ export default function Starter() {
             <CardTitle
               className="font-bold text-[32px] font-outfit"
               style={{
-                color: '#f97316',
+                color: "#f97316",
               }}
             >
               Trailblaze
@@ -198,7 +202,7 @@ export default function Starter() {
                 Recognize_resume();
                 submitResumeJob();
               }}
-              size={`${isDesktop ? 'medium' : 'small'}`}
+              size={`${isDesktop ? "medium" : "small"}`}
             >
               Get Started
             </Button>
